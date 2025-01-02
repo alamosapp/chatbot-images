@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gráfico de Torta con Títulos y Porcentajes</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <style>
+    body {
+      font-family: 'BWHaasText', Helvetica, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    #chartContainer {
+      max-width: 400px;
+      margin: 50px auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="chartContainer">
+    <canvas id="pieChart"></canvas>
+  </div>
+  <script>
+    const data = {
+      labels: ['Acciones', 'Fondos mutuos', 'Bonos', 'Cash'],
+      datasets: [{
+        data: [50000, 30000, 20000, 10000],
+        backgroundColor: ['#CCCCCC', '#CCCCCC', '#CCCCCC', '#CCCCCC'],
+        hoverBackgroundColor: ['#1D1E22', '#1D1E22', '#1D1E22', '#1D1E22']
+      }]
+    };
+    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+    const config = {
+      type: 'pie',
+      data: data,
+      options: {
+        plugins: {
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#000000',
+            bodyColor: '#000000',
+            titleFont: {
+              size: 16
+            },
+            bodyFont: {
+              size: 16
+            },
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                const value = context.raw;
+                return `$${value.toLocaleString()}`;
+              }
+            },
+            displayColors: false,
+            borderColor: '#000000',
+            borderWidth: 1
+          },
+          legend: {
+            display: false
+          },
+          datalabels: {
+            color: (context) => {
+              const index = context.dataIndex;
+              const element = context.chart.getDatasetMeta(0).data[index];
+              return element.active ? '#FFFFFF' : '#000000';
+            },
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            formatter: (value, context) => {
+              const percentage = ((value / total) * 100).toFixed(1);
+              const label = context.chart.data.labels[context.dataIndex];
+              return `${label}\n${percentage}%`;
+            },
+            align: 'center',
+            anchor: 'center'
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    };
+    new Chart(
+      document.getElementById('pieChart'),
+      config
+    );
+  </script>
+</body>
+</html>
